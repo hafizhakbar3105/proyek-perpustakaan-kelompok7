@@ -1,15 +1,25 @@
 <?php
+// Memanggil file model Book agar class Book bisa digunakan di halaman ini
 require_once __DIR__ . '/../models/Book.php';
 
+// Mengambil semua data buku dari database menggunakan static method all()
 $books = Book::all();
 
+// Mengecek apakah ada pengiriman data melalui metode POST (saat tombol 'Simpan Buku' diklik)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Membuat objek baru dari class Book dengan data yang diambil dari form ($_POST)
+    // (int) digunakan untuk memastikan nilai stok yang masuk adalah tipe data integer
     $book = new Book($_POST['kode'], $_POST['judul'], (int)$_POST['stok']);
+    
+    // Memanggil method save() pada objek book untuk menyimpan data ke database
     $book->save();
+    
+    // Setelah berhasil simpan, redirect (alihkan) kembali ke halaman books.php untuk menyegarkan data
     header("Location: books.php");
-    exit;
+    exit; // Menghentikan eksekusi script agar redirect berjalan sempurna
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -21,12 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Custom Styling untuk meningkatkan User Experience (UX) */
         body {
-            background-color: #f8fbff;
+            background-color: #f8fbff; /* Warna latar belakang soft biru/putih */
             font-family: 'Inter', sans-serif;
             color: #334155;
         }
 
+        /* Desain Card Utama agar konten terlihat melayang dan bersih */
         .main-card {
             background: #ffffff;
             border: none;
@@ -35,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 2rem;
         }
 
+        /* Styling Input Form agar lebih modern saat diklik/fokus */
         .form-control {
             border-radius: 10px;
             padding: 0.6rem 1rem;
@@ -46,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
         }
 
+        /* Tombol kustom dengan efek transisi saat dihover */
         .btn-primary-custom {
             background-color: #0d6efd;
             border: none;
@@ -57,9 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-primary-custom:hover {
             background-color: #0b5ed7;
-            transform: translateY(-2px);
+            transform: translateY(-2px); /* Efek mengangkat sedikit saat kursor diatas tombol */
         }
 
+        /* Styling Tabel: Membuat baris memiliki jarak dan sudut melengkung */
         .table {
             border-collapse: separate;
             border-spacing: 0 8px;
@@ -87,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             vertical-align: middle;
         }
 
+        /* Memberikan border-radius hanya pada ujung kiri dan kanan baris tabel */
         .table tbody td:first-child {
             border-left: 1px solid #f1f5f9;
             border-top-left-radius: 12px;
@@ -99,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-bottom-right-radius: 12px;
         }
 
+        /* Badge stok dengan warna kontras yang lembut */
         .badge-stok {
             background: #e0f2fe;
             color: #0369a1;
@@ -146,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="number" name="stok" class="form-control" placeholder="0" min="0">
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-primary-custom w-100">Simpan Buku</button>
+                <button type="submit" class="btn btn-primary-custom w-100">Simpan Buku</button>
             </div>
         </form>
     </div>

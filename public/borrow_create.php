@@ -1,26 +1,39 @@
 <?php
-require_once __DIR__ . '/../models/Book.php';
-require_once __DIR__ . '/../models/Member.php';
-require_once __DIR__ . '/../models/Borrowing.php';
-require_once __DIR__ . '/../models/BorrowItem.php';
+// Memasukkan file model yang diperlukan agar logika bisnis aplikasi bisa berjalan
+require_once __DIR__ . '/../models/Book.php';      // Logika data buku
+require_once __DIR__ . '/../models/Member.php';    // Logika data anggota/peminjam
+require_once __DIR__ . '/../models/Borrowing.php'; // Logika utama transaksi peminjaman
+require_once __DIR__ . '/../models/BorrowItem.php'; // Logika untuk item buku yang dipinjam
 
+// Mengambil semua data buku dan anggota untuk ditampilkan di form (dropdown & tabel)
 $books   = Book::all();
 $members = Member::all();
 
+// Mengecek apakah form sudah dikirim (tombol Proses diklik)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 1. Membuat header transaksi peminjaman baru berdasarkan ID Anggota yang dipilih
     $borrow = new Borrowing((int)$_POST['member_id']);
 
+    // 2. Melakukan looping (perulangan) terhadap daftar buku yang ada di tabel
+    // $i adalah index, $bookId adalah value dari input hidden 'book_id[]'
     foreach ($_POST['book_id'] as $i => $bookId) {
+        
+        // Hanya proses buku yang jumlah pinjamnya (qty) lebih dari 0
         if ($_POST['qty'][$i] > 0) {
+            // Menambahkan item buku ke dalam objek transaksi $borrow
+            // Mengambil judul dari input hidden 'judul[]' berdasarkan index yang sama ($i)
             $borrow->addItem(
                 new BorrowItem($bookId, $_POST['judul'][$i])
             );
         }
     }
 
+    // 3. Simpan seluruh data transaksi (header dan detail item) ke database
     $borrow->save();
+    
+    // 4. Setelah berhasil, arahkan user ke halaman laporan peminjaman
     header("Location: borrow_report.php");
-    exit;
+    exit; // Berhenti mengecek script di bawahnya
 }
 ?>
 <!DOCTYPE html>
@@ -34,12 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Gaya visual aplikasi agar nyaman dipandang (Clean UI) */
         body {
             background-color: #f8fbff;
             font-family: 'Inter', sans-serif;
             color: #334155;
         }
 
+        /* Card utama tempat form berada */
         .main-card {
             background: #ffffff;
             border: none;
@@ -48,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overflow: hidden;
         }
 
+        /* Garis dekoratif di samping judul section */
         .section-title {
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -73,24 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #e2e8f0;
         }
 
-        .form-select:focus, .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
-        }
-
-        /* Table Styling */
-        .table {
-            vertical-align: middle;
-        }
-        
-        .table thead th {
-            background: #f8fbff;
-            border: none;
-            color: #475569;
-            font-weight: 600;
-            padding: 1rem;
-        }
-
+        /* Desain input angka untuk jumlah buku */
         .qty-input {
             max-width: 100px;
             text-align: center;
@@ -98,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-color: #cbd5e1;
         }
 
+        /* Desain tombol proses yang menonjol */
         .btn-submit {
             background: #0d6efd;
             border: none;
@@ -111,16 +111,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn-submit:hover {
             background: #0b5ed7;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
         }
 
         .back-link {
             text-decoration: none;
             color: #64748b;
-            transition: 0.2s;
         }
-
-        .back-link:hover { color: #0d6efd; }
     </style>
 </head>
 <body class="py-5">
@@ -149,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <select name="member_id" class="form-select" required>
                                 <option value="" disabled selected>Pilih nama anggota...</option>
                                 <?php foreach ($members as $m): ?>
-                                <option value="<?= $m['id'] ?>"><?= $m['nama'] ?></option>
+                                    <option value="<?= $m['id'] ?>"><?= $m['nama'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -170,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td>
                                         <div class="fw-bold text-dark"><?= htmlspecialchars($b['judul']) ?></div>
                                         <div class="text-muted small">ID: <?= htmlspecialchars($b['id'] ?? 'N/A') ?></div>
+                                        
                                         <input type="hidden" name="book_id[]" value="<?= $b['id'] ?>">
                                         <input type="hidden" name="judul[]" value="<?= $b['judul'] ?>">
                                     </td>

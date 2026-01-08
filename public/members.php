@@ -1,13 +1,21 @@
 <?php
+// Memasukkan file model Member agar aplikasi bisa mengakses data anggota dari database
 require_once __DIR__ . '/../models/Member.php';
 
+// Mengambil semua daftar anggota yang tersimpan di database untuk ditampilkan di tabel
 $members = Member::all();
 
+// Mengecek apakah ada data yang dikirim melalui formulir (Metode POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Membuat objek baru dari class Member dengan data nama dan tipe dari input user
     $member = new Member($_POST['nama'], $_POST['tipe']);
+    
+    // Menyimpan data anggota baru tersebut ke dalam database
     $member->save();
+    
+    // Setelah data tersimpan, halaman akan dimuat ulang (refresh) agar daftar anggota terbaru muncul
     header("Location: members.php");
-    exit;
+    exit; // Menghentikan proses script setelah instruksi redirect
 }
 ?>
 <!DOCTYPE html>
@@ -21,12 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Pengaturan tema visual dasar halaman */
         body {
             background-color: #f8fbff;
             font-family: 'Inter', sans-serif;
             color: #334155;
         }
 
+        /* Container putih untuk formulir agar terlihat rapi dan elegan */
         .main-card {
             background: #ffffff;
             border: none;
@@ -35,12 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 2rem;
         }
 
+        /* Menyeragamkan tampilan input teks dan pilihan dropdown */
         .form-control, .form-select {
             border-radius: 10px;
             padding: 0.6rem 1rem;
             border: 1px solid #e2e8f0;
         }
 
+        /* Tombol simpan dengan efek transisi hover (UX: interaksi tombol) */
         .btn-primary-custom {
             background-color: #0d6efd;
             border: none;
@@ -52,10 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-primary-custom:hover {
             background-color: #0b5ed7;
-            transform: translateY(-2px);
+            transform: translateY(-2px); /* Tombol sedikit naik saat disentuh mouse */
         }
 
-        /* Styling Tabel Modern */
+        /* Desain Tabel Modern: Baris memiliki jarak (spacing) dan sudut melengkung */
         .table {
             border-collapse: separate;
             border-spacing: 0 8px;
@@ -81,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             vertical-align: middle;
         }
 
+        /* Styling spesifik untuk pojok kiri dan kanan baris tabel agar membulat */
         .table tbody td:first-child {
             border-left: 1px solid #f1f5f9;
             border-top-left-radius: 12px;
@@ -93,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-bottom-right-radius: 12px;
         }
 
-        /* Badge untuk Tipe Anggota */
+        /* Desain Label (Badge) untuk membedakan kategori anggota secara visual */
         .badge-member {
             padding: 0.4rem 0.8rem;
             border-radius: 8px;
@@ -101,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 0.75rem;
             text-transform: capitalize;
         }
+        /* Warna biru untuk Mahasiswa, Kuning/Cokelat untuk Umum */
         .badge-mahasiswa { background: #e0f2fe; color: #0369a1; }
         .badge-umum { background: #fef3c7; color: #92400e; }
 
@@ -135,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-primary-custom w-100">Simpan</button>
+                <button type="submit" class="btn btn-primary-custom w-100">Simpan</button>
             </div>
         </form>
     </div>

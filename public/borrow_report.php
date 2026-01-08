@@ -1,8 +1,13 @@
 <?php
-require_once __DIR__ . '/../models/Borrowing.php';
-require_once __DIR__ . '/../core/FineStrategy.php';
+// Memasukkan file model dan core logic yang dibutuhkan
+require_once __DIR__ . '/../models/Borrowing.php'; // Mengambil data transaksi peminjaman
+require_once __DIR__ . '/../core/FineStrategy.php'; // Logika strategi perhitungan denda (OOP Strategy Pattern)
 
+// Mengambil data laporan dari database melalui static method report()
 $data = Borrowing::report();
+
+// Inisialisasi objek denda menggunakan strategi khusus siswa (StudentFine)
+// Ini memudahkan jika nanti ada 'TeacherFine' atau 'PublicFine' dengan tarif berbeda
 $fine = new StudentFine();
 ?>
 <!DOCTYPE html>
@@ -16,12 +21,14 @@ $fine = new StudentFine();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Pengaturan tema global: Latar belakang biru pucat agar mata tidak cepat lelah */
         body {
             background-color: #f8fbff;
             font-family: 'Inter', sans-serif;
             color: #334155;
         }
 
+        /* Desain kartu laporan dengan shadow halus (soft shadow) */
         .report-card {
             background: #ffffff;
             border: none;
@@ -30,11 +37,7 @@ $fine = new StudentFine();
             padding: 2rem;
         }
 
-        /* Styling Tabel */
-        .table {
-            vertical-align: middle;
-        }
-
+        /* Styling Header Tabel: menggunakan font kecil dan uppercase agar terlihat seperti dashboard profesional */
         .table thead th {
             border: none;
             color: #64748b;
@@ -46,6 +49,7 @@ $fine = new StudentFine();
             background: #fcfdfe;
         }
 
+        /* Efek hover pada baris tabel untuk meningkatkan user experience (UX) saat membaca data */
         .table tbody tr {
             border-bottom: 1px solid #f1f5f9;
             transition: 0.2s;
@@ -55,12 +59,7 @@ $fine = new StudentFine();
             background-color: #f0f7ff;
         }
 
-        .table tbody td {
-            padding: 1.2rem 1rem;
-            color: #475569;
-        }
-
-        /* Badge & Currency */
+        /* Styling teks tanggal dan nominal denda agar kontras dan mudah dibaca */
         .date-text {
             color: #0d6efd;
             font-weight: 600;
@@ -68,30 +67,27 @@ $fine = new StudentFine();
         }
 
         .fine-amount {
-            color: #dc3545;
+            color: #dc3545; /* Merah untuk menunjukkan denda/biaya */
             font-weight: 700;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', Courier, monospace; /* Font monospaced agar angka sejajar vertikal */
         }
 
+        /* Styling tombol kembali dan cetak */
         .back-link {
             text-decoration: none;
             color: #64748b;
-            font-weight: 500;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             transition: 0.2s;
         }
 
-        .back-link:hover {
-            color: #0d6efd;
-        }
+        .back-link:hover { color: #0d6efd; }
 
         .btn-export {
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.85rem;
-            padding: 0.5rem 1rem;
         }
     </style>
 </head>
@@ -160,7 +156,7 @@ $fine = new StudentFine();
 
     <div class="mt-4 p-3 rounded-4 bg-primary bg-opacity-10">
         <div class="d-flex gap-2 align-items-center text-primary small">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/swap" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
             </svg>
             <span>Informasi denda dihitung berdasarkan strategi tarif standar <b>StudentFine</b>.</span>
