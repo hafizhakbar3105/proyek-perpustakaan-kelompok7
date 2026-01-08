@@ -1,13 +1,18 @@
 <?php
+// Native PHP (tanpa framework)
 require_once __DIR__ . '/../core/BaseModel.php';
 require_once __DIR__ . '/../core/Database.php';
 
+// Class Book merupakan bagian dari konsep Class & Object
+// extends BaseModel menunjukkan Inheritance dan penggunaan Abstract Class
 class Book extends BaseModel
 {
+    // Atribut class Book (Enkapsulasi)
     private string $kode;
     private string $judul;
     private int $stok;
 
+    // Constructor sebagai method pembentuk object Book
     public function __construct(string $kode, string $judul, int $stok)
     {
         $this->setKode($kode);
@@ -15,7 +20,7 @@ class Book extends BaseModel
         $this->setStok($stok);
     }
 
-    // ===== ENKAPSULASI (GETTER & SETTER) =====
+    // Getter sebagai bagian dari Enkapsulasi
     public function getKode(): string
     {
         return $this->kode;
@@ -31,6 +36,7 @@ class Book extends BaseModel
         return $this->stok;
     }
 
+    // Setter sebagai bagian dari Enkapsulasi
     public function setKode(string $kode): void
     {
         if (strlen($kode) < 3) {
@@ -55,12 +61,13 @@ class Book extends BaseModel
         $this->stok = $stok;
     }
 
-    // ===== CRUD =====
+    // Method save merupakan bagian dari Polimorfisme (override dari BaseModel)
     public function save(): bool
     {
         $db = Database::getConnection();
 
         if ($this->id === null) {
+            // Create (INSERT data)
             $stmt = $db->prepare(
                 "INSERT INTO books (kode, judul, stok) VALUES (?,?,?)"
             );
@@ -71,6 +78,7 @@ class Book extends BaseModel
             return $ok;
         }
 
+        // Update (UPDATE data)
         $stmt = $db->prepare(
             "UPDATE books SET kode=?, judul=?, stok=? WHERE id=?"
         );
@@ -82,6 +90,7 @@ class Book extends BaseModel
         ]);
     }
 
+    // Method delete untuk menghapus data
     public function delete(): bool
     {
         if ($this->id === null) return false;
@@ -91,6 +100,7 @@ class Book extends BaseModel
         return $stmt->execute([$this->id]);
     }
 
+    // Method static all untuk mengambil seluruh data buku
     public static function all(): array
     {
         $db = Database::getConnection();

@@ -1,19 +1,24 @@
 <?php
+// Native PHP (tanpa framework)
 require_once __DIR__ . '/../core/BaseModel.php';
 require_once __DIR__ . '/../core/Database.php';
 
+// Class Member merupakan bagian dari konsep Class & Object
+// extends BaseModel menunjukkan Inheritance dan penggunaan Abstract Class
 class Member extends BaseModel
 {
+    // Atribut class Member (Enkapsulasi)
     private string $nama;
     private string $tipe; // mahasiswa / umum
 
+    // Constructor untuk membuat object Member
     public function __construct(string $nama, string $tipe)
     {
         $this->setNama($nama);
         $this->setTipe($tipe);
     }
 
-    // ===== ENKAPSULASI =====
+    // Getter sebagai bagian dari Enkapsulasi
     public function getNama(): string
     {
         return $this->nama;
@@ -24,6 +29,7 @@ class Member extends BaseModel
         return $this->tipe;
     }
 
+    // Setter sebagai bagian dari Enkapsulasi
     public function setNama(string $nama): void
     {
         if (strlen($nama) < 3) {
@@ -40,12 +46,13 @@ class Member extends BaseModel
         $this->tipe = $tipe;
     }
 
-    // ===== CRUD =====
+    // Method save merupakan bagian dari Polimorfisme (override dari BaseModel)
     public function save(): bool
     {
         $db = Database::getConnection();
 
         if ($this->id === null) {
+            // Create (INSERT data)
             $stmt = $db->prepare(
                 "INSERT INTO members (nama, tipe) VALUES (?,?)"
             );
@@ -56,12 +63,14 @@ class Member extends BaseModel
             return $ok;
         }
 
+        // Update (UPDATE data)
         $stmt = $db->prepare(
             "UPDATE members SET nama=?, tipe=? WHERE id=?"
         );
         return $stmt->execute([$this->nama, $this->tipe, $this->id]);
     }
 
+    // Method delete untuk menghapus data anggota
     public function delete(): bool
     {
         if ($this->id === null) return false;
@@ -71,6 +80,7 @@ class Member extends BaseModel
         return $stmt->execute([$this->id]);
     }
 
+    // Method static all untuk mengambil seluruh data anggota
     public static function all(): array
     {
         $db = Database::getConnection();
